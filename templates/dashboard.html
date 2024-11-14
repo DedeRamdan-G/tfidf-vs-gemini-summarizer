@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Peringkas Teks</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+    }
+
+    .navbar {
+      background-color: #00796b;
+    }
+
+    .card-title {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .textarea-container {
+      margin-top: 2em;
+    }
+
+    .textarea-container textarea {
+      background-color: #e0f7fa;
+      border: 1px solid #00796b;
+    }
+
+    .btn-primary {
+      background-color: #00796b;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #004d40;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 8px;
+    }
+
+    .card-header {
+      background-color: #00796b;
+    }
+
+    .card-header span {
+      color: #ffffff;
+    }
+
+    .card-action button {
+      background-color: #00796b;
+    }
+
+    .card-action button:hover {
+      background-color: #004d40;
+    }
+
+    table.highlight {
+      background-color: #e0f7fa;
+    }
+
+    table.highlight thead {
+      background-color: #00796b;
+      color: #ffffff;
+    }
+
+    table.highlight tbody tr:nth-child(even) {
+      background-color: #b2dfdb;
+    }
+
+    table.highlight tbody tr:nth-child(odd) {
+      background-color: #e0f2f1;
+    }
+
+    .center-align {
+      margin-top: 1.5em;
+    }
+
+    .card-action {
+      padding: 1em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar-fixed">
+    <nav class="navbar">
+      <div class="nav-wrapper">
+        <a href="" class="brand-logo center">Teks Summarization</a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      </div>
+    </nav>
+  </div>
+
+<div class="center-align">
+  <a href="{% url 'scholar_results' %}" class="btn btn-primary waves-effect waves-light mx-2">Cari data referensi Berita</a>
+    <a href="{% url 'scrape_news' %}" class="btn btn-primary waves-effect waves-light mx-2">Cari data referensi Berita</a>
+</div>
+
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <h1 class="center-align" style="font-weight: bold;">Compare Text Summarization</h1>
+        <form method="post" action="">
+          {% csrf_token %}
+          <div class="input-field">
+            <textarea id="text" class="materialize-textarea" name="text"
+              placeholder="Masukkan teksmu disini"></textarea>
+          </div>
+          <div class="center">
+            <button class="btn btn-primary waves-effect waves-light" type="submit">Ringkas Sekarang</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-header center-align">
+            <span class="card-title">Hasil Peringkasan Menggunakan TF-IDF</span>
+          </div>
+          <div class="card-content">
+            <p>{{ tfidf_summary }}</p>
+          </div>
+          <div class="card-action center-align">
+            <button class="btn btn-primary waves-effect waves-light"
+              onclick="copyToClipboard('{{ tfidf_summary|escapejs }}')">Salin Ringkasan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-header center-align">
+            <span class="card-title">Hasil Peringkasan Menggunakan AI</span>
+          </div>
+          <div class="card-content">
+            <p>{{ gemini_summary }}</p>
+          </div>
+          <div class="card-action center-align">
+            <button class="btn btn-primary waves-effect waves-light"
+              onclick="copyToClipboard('{{ gemini_summary|escapejs }}')">Salin Ringkasan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-header center-align">
+            <span class="card-title">Hasil analisis ROUGE untuk ringkasan TF-IDF dan Artificial Intelligence:</span>
+          </div>
+          <div class="card-content">
+            <table class="highlight">
+              <thead>
+                <tr>
+                  <th>Metode</th>
+                  <th>ROUGE-1</th>
+                  <th>ROUGE-2</th>
+                  <th>ROUGE-L</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>TF-IDF</td>
+                  <td>{{ rouge_scores_tfidf.rouge1 }}</td>
+                  <td>{{ rouge_scores_tfidf.rouge2 }}</td>
+                  <td>{{ rouge_scores_tfidf.rougeL }}</td>
+                </tr>
+                <tr>
+                  <td>Artificial Intelligence</td>
+                  <td>{{ rouge_scores_gemini.rouge1 }}</td>
+                  <td>{{ rouge_scores_gemini.rouge2 }}</td>
+                  <td>{{ rouge_scores_gemini.rougeL }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-action center-align">
+            <a href="{% url 'detail' %}" class="btn btn-primary waves-effect waves-light">Detail Analisis</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(function () {
+        alert('Ringkasan telah disalin');
+      }, function (err) {
+        console.error('Tidak dapat menyalin teks: ', err);
+      });
+    }
+  </script>
+</body>
+
+</html>

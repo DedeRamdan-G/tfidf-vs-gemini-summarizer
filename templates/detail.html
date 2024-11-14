@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Proses Ringkasan Teks</title>
+    <!-- Materialize CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+         background-color: #f0f4f8;
+        }
+        .step-card {
+            margin-bottom: 20px;
+        }
+        .step-card h5 {
+            color: #00796b;
+        }
+        .diagram {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            display: block;
+        }
+        table.highlight {
+        background-color: #e0f7fa;
+        }
+        table.highlight thead {
+            background-color: #00796b;
+            color: #ffffff;
+        }
+        table.highlight tbody tr:nth-child(even) {
+            background-color: #b2dfdb;
+        }
+        table.highlight tbody tr:nth-child(odd) {
+            background-color: #e0f2f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="center-align">Detail Proses Ringkasan Teks</h1>
+
+        <!-- Introduction Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Pendahuluan</span>
+                <p>Halaman ini menjelaskan proses pembuatan ringkasan teks menggunakan dua metode: TF-IDF dan AI. Anda juga akan melihat perbandingan hasil menggunakan metrik ROUGE.</p>
+            </div>
+        </div>
+
+        <!-- Original Text Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Teks Asli</span>
+                <p>{{ original_text }}</p>
+            </div>
+        </div>
+
+        <!-- Preprocessing Steps Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Tahapan Preprocessing</span>
+        
+                <!-- Case Folding -->
+                <div class="step-card">
+                    <h5><i class="material-icons">text_format</i> Case Folding</h5>
+                    <p> {{ preprocessing_steps.case_folding }}</p>
+                </div>
+        
+                <!-- Tokenizing -->
+                <div class="step-card">
+                    <h5><i class="material-icons">view_list</i> Tokenizing</h5>
+                    <p> {{ preprocessing_steps.tokenizing }}</p>
+                </div>
+        
+                <!-- Stopwords Removal -->
+                <div class="step-card">
+                    <h5><i class="material-icons">remove_circle</i> Stopwords Removal</h5>
+                    <p> {{ preprocessing_steps.stopwords_removal }}</p>
+                </div>
+        
+                <!-- Stemming -->
+                <div class="step-card">
+                    <h5><i class="material-icons">attach_file</i> Stemming</h5>
+                    <p> {{ preprocessing_steps.stemming }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TF-IDF Summary Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Ringkasan Menggunakan TF-IDF</span>
+                <p>{{ summary }}</p>
+                <br>
+                <button class="btn waves-effect waves-light" onclick="copyToClipboard('{{ summary }}')">Salin Ringkasan TF-IDF <i class="material-icons right">content_copy</i></button>
+            </div>
+        </div>
+
+        <!-- AI Summary Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Ringkasan Menggunakan AI</span>
+                <p>{{ gemini_summary }}</p>
+                <br>
+                <button class="btn waves-effect waves-light" onclick="copyToClipboard('{{ gemini_summary|escapejs }}')">Salin Ringkasan AI <i class="material-icons right">content_copy</i></button>
+            </div>
+        </div>
+
+        <!-- ROUGE Scores Section -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Perbandingan Menggunakan Skor ROUGE</span>
+                <p>ROUGE adalah metrik yang digunakan untuk mengevaluasi kualitas ringkasan teks. Berikut penjelasan dan hasil evaluasinya:</p>
+                
+                <!-- Penjelasan ROUGE -->
+                <div class="row">
+                    <div class="col s12">
+                        <div class="step-card">
+                            <h5>ROUGE-1</h5>
+                            <p>Mengukur kesamaan unigram (kata satuan) antara ringkasan dan teks asli.</p>
+                        </div>
+                        <div class="step-card">
+                            <h5>ROUGE-2</h5>
+                            <p>Mengukur kesamaan bigram (dua kata berurutan) antara ringkasan dan teks asli.</p>
+                        </div>
+                        <div class="step-card">
+                            <h5>ROUGE-L</h5>
+                            <p>Mengukur kesamaan urutan kata terpanjang antara ringkasan dan teks asli.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabel Skor ROUGE -->
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card">
+                            <div class="card-header center-align">
+                            <span class="card-title">Hasil analisis ROUGE untuk ringkasan TF-IDF dan Artificial Intelligence:</span>
+                            </div>
+                        <div class="card-content">
+                                <table class="highlight">
+                                    <thead>
+                                        <tr>
+                                            <th>Metode</th>
+                                            <th>ROUGE-1</th>
+                                            <th>ROUGE-2</th>
+                                            <th>ROUGE-L</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>TF-IDF</td>
+                                            <td>{{ rouge_scores_tfidf.rouge1 }}</td>
+                                            <td>{{ rouge_scores_tfidf.rouge2 }}</td>
+                                            <td>{{ rouge_scores_tfidf.rougeL }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Artificial Intelligence</td>
+                                            <td>{{ rouge_scores_gemini.rouge1 }}</td>
+                                            <td>{{ rouge_scores_gemini.rouge2 }}</td>
+                                            <td>{{ rouge_scores_gemini.rougeL }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                      <span class="card-title">Kesimpulan</span>
+                      <div class="row">
+                        <div class="col s12">
+                          <ul class="collection with-header">
+                            <li class="collection-header " style="color: white; background-color: #00796b;"><h4>Analisis ROUGE</h4></li>
+                            <li class="collection-item">
+                              <span class="badge">{{ rouge_scores_tfidf.rouge1 }}</span>
+                              <div>
+                                <h5>ROUGE-1</h5>
+                                {% if rouge_scores_gemini.rouge1 > rouge_scores_tfidf.rouge1 %}
+                                <p>Metode Artificial Intelligence memberikan hasil yang lebih baik untuk ROUGE-1. Hal ini mungkin disebabkan oleh kemampuan AI untuk menangkap makna yang lebih dalam dari teks.</p>
+                                {% elif rouge_scores_gemini.rouge1 < rouge_scores_tfidf.rouge1 %}
+                                <p>Metode TF-IDF memberikan hasil yang lebih baik untuk ROUGE-1. Hal ini mungkin disebabkan oleh kesesuaian metode ini dengan struktur teks yang digunakan.</p>
+                                {% else %}
+                                <p>Metode TF-IDF dan Artificial Intelligence memberikan hasil yang sebanding untuk ROUGE-1.</p>
+                                {% endif %}
+                              </div>
+                            </li>
+                            <li class="collection-item">
+                              <span class="badge">{{ rouge_scores_tfidf.rouge2 }}</span>
+                              <div>
+                                <h5>ROUGE-2</h5>
+                                {% if rouge_scores_gemini.rouge2 > rouge_scores_tfidf.rouge2 %}
+                                <p>Metode Artificial Intelligence memberikan hasil yang lebih baik untuk ROUGE-2. Ini bisa jadi karena AI mampu menghasilkan ringkasan yang lebih komprehensif dengan mempertimbangkan bigram dalam teks.</p>
+                                {% elif rouge_scores_gemini.rouge2 < rouge_scores_tfidf.rouge2 %}
+                                <p>Metode TF-IDF memberikan hasil yang lebih baik untuk ROUGE-2. Hal ini mungkin disebabkan oleh keakuratan metode TF-IDF dalam menangkap hubungan antar kata.</p>
+                                {% else %}
+                                <p>Metode TF-IDF dan Artificial Intelligence memberikan hasil yang sebanding untuk ROUGE-2.</p>
+                                {% endif %}
+                              </div>
+                            </li>
+                            <li class="collection-item">
+                              <span class="badge">{{ rouge_scores_tfidf.rougeL }}</span>
+                              <div>
+                                <h5>ROUGE-L</h5>
+                                {% if rouge_scores_gemini.rougeL > rouge_scores_tfidf.rougeL %}
+                                <p>Metode Artificial Intelligence memberikan hasil yang lebih baik untuk ROUGE-L. Ini mungkin disebabkan oleh kemampuan AI dalam menghasilkan ringkasan yang lebih natural dan sesuai dengan struktur kalimat.</p>
+                                {% elif rouge_scores_gemini.rougeL < rouge_scores_tfidf.rougeL %}
+                                <p>Metode TF-IDF memberikan hasil yang lebih baik untuk ROUGE-L. Hal ini bisa jadi karena metode TF-IDF dapat lebih baik dalam mempertahankan kesetiaan terhadap struktur dan urutan kalimat asli.</p>
+                                {% else %}
+                                <p>Metode TF-IDF dan Artificial Intelligence memberikan hasil yang sebanding untuk ROUGE-L.</p>
+                                {% endif %}
+                              </div>
+                            </li>
+                          </ul>
+                          <div class="center-align">
+                            <p>Berdasarkan hasil ROUGE-1, ROUGE-2, dan ROUGE-L di atas, dapat disimpulkan bahwa:</p>
+                            {% if rouge_scores_gemini.rouge1 > rouge_scores_tfidf.rouge1 and rouge_scores_gemini.rouge2 > rouge_scores_tfidf.rouge2 and rouge_scores_gemini.rougeL > rouge_scores_tfidf.rougeL %}
+                            <p>Secara keseluruhan, metode Artificial Intelligence (AI) memberikan hasil yang lebih baik dibandingkan dengan metode TF-IDF untuk semua metrik ROUGE yang dianalisis. Hal ini menunjukkan bahwa AI lebih efektif dalam menghasilkan ringkasan teks yang lebih baik dalam hal keakuratan, kelengkapan, dan kesesuaian dengan struktur kalimat.</p>
+                            {% elif rouge_scores_gemini.rouge1 < rouge_scores_tfidf.rouge1 and rouge_scores_gemini.rouge2 < rouge_scores_tfidf.rouge2 and rouge_scores_gemini.rougeL < rouge_scores_tfidf.rougeL %}
+                            <p>Secara keseluruhan, metode TF-IDF memberikan hasil yang lebih baik dibandingkan dengan metode Artificial Intelligence (AI) untuk semua metrik ROUGE yang dianalisis. Hal ini menunjukkan bahwa TF-IDF lebih efektif dalam menghasilkan ringkasan teks yang lebih akurat, terstruktur, dan sesuai dengan teks asli.</p>
+                            {% else %}
+                            <p>Metode TF-IDF dan Artificial Intelligence memberikan hasil yang sebanding untuk analisis ROUGE-1, ROUGE-2, dan ROUGE-L. Perbedaan hasil mungkin disebabkan oleh karakteristik teks yang dianalisis, dimana masing-masing metode memiliki kelebihan dan kelemahan dalam menghasilkan ringkasan teks.</p>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            M.AutoInit(); // Initialize Materialize components
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                M.toast({html: 'Teks telah disalin', classes: 'rounded'});
+            }, function(err) {
+                console.error('Tidak dapat menyalin teks: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

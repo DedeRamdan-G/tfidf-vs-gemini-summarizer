@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholar Search</title>
+    <!-- Materialize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Google Icon Font -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            color: #333;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+
+        }
+
+        .navbar {
+            background-color: #004d40;
+        }
+
+        .navbar .brand-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .input-field label {
+            color: #004d40;
+        }
+
+        .input-field input:focus {
+            border-bottom: 1px solid #004d40;
+            box-shadow: 0 1px 0 0 #004d40;
+        }
+
+        .btn {
+            background-color: #004d40;
+        }
+
+        .btn:hover {
+            background-color: #00332c;
+        }
+
+        .card {
+            color: #b4b5b6;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: auto; /* Allow card height to adjust based on content */
+            width: 100%;  /* Full width for the card */
+            max-width: 800px; /* Maximum width for the card */
+            margin: 10px auto; /* Center the card and add margin */
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card .card-title {
+            font-size: 1.2em;
+            color: #004d40;
+            font-weight: bold;
+        }
+
+        .card .card-content p {
+            color: #555;
+            font-size: 0.9em;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .card-action {
+            background-color: #004d40;
+        }
+
+        .card-action a {
+            color: #b4b5b6;
+        }
+
+        .card-action a:hover {
+            color: #b4b5b6;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .row {
+            margin-bottom: 0;
+        }
+
+        .form-container {
+            margin-bottom: 30px;
+        }
+        .container {
+            margin-top: 2em;
+        }
+
+        .card {
+            margin: 1em 0;
+        }
+
+        .pagination {
+            margin-top: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar-fixed">
+        <nav class="navbar">
+            <div class="center-align">
+                <a href="{% url 'dashboard' %}" class="btn btn-dashboard waves-effect waves-light">Go to Dashboard</a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <form method="get" action="{% url 'scholar_results' %}" class="row form-container">
+            <div class="input-field col s12 m6 l4">
+                <input type="text" id="query" name="query" value="{{ query }}" required>
+                <label for="query">Search Query</label>
+            </div>
+            <div class="input-field col s12 m6 l4">
+                <input type="number" id="num_results" name="num_results" value="{{ num_results }}" min="1" max="10" required>
+                <label for="num_results">Number of Results</label>
+            </div>
+            <div class="input-field col s12 l4">
+                <button type="submit" class="btn waves-effect waves-light">Search</button>
+            </div>
+        </form>
+
+        {% if results %}
+        <h2 class="center-align">Search Results for "{{ query }}"</h2>
+        <div class="row">
+            {% for result in results %}
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title"><a href="{{ result.Link }}" target="_blank">{{ result.Title }}</a></span>
+                        <p class="snippet">{{ result.Snippet }}</p>
+                        <p class="info"><strong>Info:</strong> {{ result.Info }}</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="{{ result.Link }}" target="_blank">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col s12">
+                <p class="no-results">No results found.</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-results">No results to display.</p>
+        {% endif %}
+    </div>
+
+    <!-- Materialize JS and jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            M.AutoInit();
+        });
+    </script>
+</body>
+
+</html>
