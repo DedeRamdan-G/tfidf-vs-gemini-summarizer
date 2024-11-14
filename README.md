@@ -12,13 +12,14 @@ Backend: Django
 Summarization: TF-IDF, AI Gemini
 Evaluasi Kualitas: ROUGE
 Library Python: sklearn, nltk, gemini, rouge_score
-Database: (sebutkan jenis database yang digunakan, misalnya SQLite atau MySQL)
+Database: MySQL
 Instalasi
 Clone repository ini:
 
 bash
 Salin kode
-git clone https://github.com/username/nama-repository.git
+git clone https://github.com/DedeRamdan-G/tfidf-vs-gemini-summarizer.git
+
 Masuk ke direktori proyek:
 
 bash
